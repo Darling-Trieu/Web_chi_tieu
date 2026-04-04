@@ -1,182 +1,148 @@
-<?php
-require $_SERVER['DOCUMENT_ROOT'] . '/src/views/partials/application/AppHeader.php';
-?>
-<div class="fixed top-0 left-0 w-full h-12 bg-gradient-to-r from-emerald-500 to-blue-500 text-white flex items-center px-6 z-50 center justify-center text-3xl ">
-    <span class="font-semibold tracking-wide">Quản lý chi tiêu</span>
+<?php require $_SERVER['DOCUMENT_ROOT'] . '/src/views/partials/application/AppHeader.php'; ?>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="fixed top-0 left-0 w-full h-12 bg-gradient-to-r from-emerald-500 to-blue-500 text-white flex items-center px-6 z-50 justify-center text-xl font-bold">
+    Quản lý chi tiêu
 </div>
-<div class="fixed top-12 left-0 w-full h-16 bg-white/70 backdrop-blur border-b shadow-sm flex items-center justify-between px-6 z-40">
 
-    <div class="flex items-center gap-4">
-        <div class="text-2xl font-bold bg-gradient-to-r from-emerald-500 to-blue-500 bg-clip-text text-transparent">
-            HIENLTH
+<div class="fixed top-12 left-0 w-full h-16 bg-white/80 backdrop-blur border-b shadow-sm flex items-center justify-between px-6 z-40">
+    <div class="text-2xl font-bold text-emerald-600">HIENLTH</div>
+    <div class="flex items-center gap-6">
+        <div class="text-right">
+            <p class="text-xs text-gray-400">Số dư hiện tại</p>
+            <p class="font-bold text-lg <?= $balance >= 0 ? 'text-green-600' : 'text-red-600' ?>"><?= number_format($balance) ?>đ</p>
         </div>
+        <button id="openExpenseForm" class="bg-emerald-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-emerald-600 shadow-md transition-all">+ Giao dịch</button>
     </div>
-    <div class="flex items-center gap-4">
-        <div class="text-lg font-semibold">
-            Số dư: <span id="balance" class="text-green-500">0 VND</span>
-        </div>
-
-        <button id="openExpenseForm"
-            class="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-md bg-primary text-primary-foreground hover:opacity-90">
-            + Thu / Chi
-        </button>
-    </div>
-
 </div>
-<div class="mt-32"></div>
 
-<div class="mt-20"></div>
+<div class="flex pt-28">
+    <div class="fixed left-0 w-64 h-full bg-white border-r p-4 space-y-2">
+        <a href="?page=home" class="block p-3 rounded-xl <?= $page=='home'?'bg-emerald-50 text-emerald-600 font-bold':'' ?>">🏠 Trang chủ</a>
+        <a href="?page=history" class="block p-3 rounded-xl <?= $page=='history'?'bg-emerald-50 text-emerald-600 font-bold':'' ?>">📜 Lịch sử giao dịch</a>
+        <hr class="my-4">
+        <a href="?action=export" class="block p-3 rounded-xl hover:bg-gray-100 text-blue-600 font-medium italic">📥 Xuất file Excel (CSV)</a>
+    </div>
 
-<div id="expenseModal" class="hidden fixed inset-0 bg-black/40 flex justify-center items-center z-50">
-    
-    <div class="w-full max-w-lg">
-        <div class="flex flex-col justify-center items-center px-4 py-8">
-            <div class="max-w-lg w-full space-y-4">
-                <div class="flex items-center justify-between h-14 px-4 rounded-lg bg-card border text-xl font-bold shadow-sm">
-                    <span>Quản lý chi tiêu</span>
-                    <button id="closeExpenseForm">✕</button>
+    <div class="ml-64 flex-1 p-8">
+        <?php if ($page === 'home'): ?>
+            <div class="max-w-5xl mx-auto space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-2xl border shadow-sm">
+                        <h3 class="font-bold text-gray-700 mb-4">Hạn mức chi tiêu tháng này</h3>
+                        <div class="flex items-end justify-between mb-2">
+                            <span class="text-2xl font-bold text-gray-800"><?= number_format($budget) ?>đ</span>
+                            <form method="POST" class="flex gap-2">
+                                <input type="number" name="budget_amount" placeholder="Đổi hạn mức" class="border rounded px-2 py-1 text-sm w-28 outline-none focus:border-emerald-500">
+                                <button name="set_budget" class="bg-gray-100 px-3 py-1 rounded text-sm hover:bg-emerald-500 hover:text-white transition-all">Lưu</button>
+                            </form>
+                        </div>
+                        <?php 
+                            $tongChi = 0;
+                            foreach($transactions as $t) if($t['type']=='Chi') $tongChi += $t['amount'];
+                            $percent = ($budget > 0) ? ($tongChi / $budget) * 100 : 0;
+                            $barColor = ($percent > 100) ? 'bg-red-500' : 'bg-emerald-500';
+                        ?>
+                        <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                            <div class="h-full <?= $barColor ?> transition-all" style="width: <?= min($percent, 100) ?>%"></div>
+                        </div>
+                        <p class="text-xs mt-2 <?= $percent > 100 ? 'text-red-500 font-bold' : 'text-gray-400' ?>">
+                            Đã chi: <?= number_format($tongChi) ?>đ (<?= round($percent, 1) ?>%)
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border shadow-sm flex flex-col items-center">
+                        <h3 class="font-bold text-gray-700 mb-4 w-full text-left">Phân bổ chi tiêu</h3>
+                        <div class="w-full h-48">
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                    </div>
                 </div>
-
-                <form id="expenseForm" class="flex flex-col gap-5 p-6 rounded-lg bg-card border shadow-sm">
-                    
-                    <div>
-                        <label>Số Tiền</label>
-                        <input type="number" name="amount" required class="w-full border p-2 rounded">
-                    </div>
-
-                    <div>
-                        <label>Loại</label>
-                        <select id="typeSelect" name="type" required class="w-full border p-2 rounded">
-                            <option value="">Chọn</option>
-                            <option value="Thu">Thu</option>
-                            <option value="Chi">Chi</option>
-                        </select>
-                    </div>
-
-                    <div id="categoryBox">
-                        <label>Danh Mục</label>
-                        <select id="category" name="category" class="w-full border p-2 rounded">
-                            <option>Ăn uống</option>
-                            <option>Di chuyển</option>
-                            <option>Mua sắm</option>
-                            <option>Giải trí</option>
-                            <option>Khác</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label>Ngày</label>
-                        <input type="date" name="date" required class="w-full border p-2 rounded">
-                    </div>
-
-                    <div>
-                        <label>Ghi chú</label>
-                        <textarea name="note" class="w-full border p-2 rounded"></textarea>
-                    </div>
-
-                    <button class="h-10 bg-primary text-white rounded hover:opacity-90">
-                        Lưu Giao Dịch
-                    </button>
-                </form>
-
+                
+                <div class="p-10 bg-emerald-50 rounded-3xl border border-emerald-100 text-center">
+                    <h2 class="text-2xl font-bold text-emerald-800">Chào HIENLTH!</h2>
+                    <p class="text-emerald-600 opacity-75">Hôm nay là <?= date('d/m/Y') ?>. Chúc bạn một ngày chi tiêu hợp lý!</p>
+                </div>
             </div>
-        </div>
+
+        <?php else: ?>
+            <div class="max-w-4xl mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">Danh sách giao dịch</h2>
+                    <a href="?action=export" class="text-sm bg-blue-50 text-blue-600 px-3 py-1 rounded-lg border border-blue-200">⬇ Tải file CSV</a>
+                </div>
+                <div class="bg-white rounded-2xl border shadow-sm divide-y">
+                    <?php if(empty($transactions)): ?> <p class="p-10 text-center text-gray-400">Chưa có giao dịch.</p> <?php endif; ?>
+                    <?php foreach (array_reverse($transactions) as $t): ?>
+                        <div class="p-4 flex justify-between items-center hover:bg-gray-50">
+                            <div>
+                                <p class="font-bold text-gray-700"><?= htmlspecialchars($t['category']) ?></p>
+                                <p class="text-xs text-gray-400"><?= $t['date'] ?> • <?= htmlspecialchars($t['note']) ?></p>
+                            </div>
+                            <p class="font-bold <?= $t['type']=='Thu'?'text-emerald-500':'text-red-500' ?>">
+                                <?= ($t['type']=='Thu'?'+':'-') . number_format($t['amount']) ?>đ
+                            </p>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
-<div class="fixed top-auto left-0 h-[calc(100vh-4rem)] w-64 bg-white border-r shadow-sm">
 
-    <div class="p-4 space-y-2">
-        <div class="p-3 rounded-lg bg-emerald-100 text-emerald-600 font-medium">
-            Trang chủ
-        </div>
-        <div class="p-3 rounded-lg hover:bg-gray-100 cursor-pointer">
-            Lịch sử giao dịch 
-        </div>
-        <div class="p-3 rounded-lg hover:bg-gray-100 cursor-pointer">
-            Danh mục giao dịch
-        </div>
-        <div class="p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors duration-200">
-            <div class="font-medium text-gray-700 mb-2 flex items-center gap-2">
-                <span>📊</span> Thống kê
+<div id="expenseModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-[100] p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+        <form method="POST" class="p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-4">
+                <span class="text-xl font-bold">Thêm Giao Dịch</span>
+                <button type="button" id="closeExpenseForm" class="text-gray-400 hover:text-black">✕</button>
             </div>
-            <select name="category" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200">
-                <option>Theo tuần</option>
-                <option>Theo tháng</option>
-            </select>
-        </div>
-
-        <div class="p-3 rounded-lg hover:bg-gray-100 cursor-pointer">
-            Cài đặt
-        </div>
-
+            <input type="number" name="amount" placeholder="0 VND" required class="w-full text-3xl font-bold text-emerald-600 border-none focus:ring-0 p-0 text-center">
+            <div class="grid grid-cols-2 gap-4">
+                <select name="type" id="typeSelect" class="border p-2 rounded-xl outline-none">
+                    <option value="Chi">Khoản Chi</option>
+                    <option value="Thu">Khoản Thu</option>
+                </select>
+                <select name="category" id="categoryBox" class="border p-2 rounded-xl outline-none">
+                    <option>Ăn uống</option><option>Học tập</option><option>Giải trí</option><option>Mua sắm</option><option>Di chuyển</option>
+                </select>
+            </div>
+            <input type="date" name="date" value="<?= date('Y-m-d') ?>" class="w-full border p-2 rounded-xl">
+            <textarea name="note" placeholder="Ghi chú thêm..." class="w-full border p-2 rounded-xl"></textarea>
+            <button type="submit" class="w-full py-4 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600 shadow-lg">LƯU THÔNG TIN</button>
+        </form>
     </div>
-
 </div>
 
 <script>
-let transactions = [];
+    const modal = document.getElementById("expenseModal");
+    document.getElementById("openExpenseForm").onclick = () => modal.classList.remove("hidden");
+    document.getElementById("closeExpenseForm").onclick = () => modal.classList.add("hidden");
 
-const openBtn = document.getElementById("openExpenseForm");
-const closeBtn = document.getElementById("closeExpenseForm");
-const modal = document.getElementById("expenseModal");
-
-openBtn.onclick = () => modal.classList.remove("hidden");
-closeBtn.onclick = () => modal.classList.add("hidden");
-
-modal.onclick = (e) => {
-    if (e.target === modal) modal.classList.add("hidden");
-};
-const form = document.getElementById("expenseForm");
-
-const typeSelect = document.getElementById("typeSelect");
-const categoryBox = document.getElementById("categoryBox");
-
-typeSelect.addEventListener("change", function() {
-    if (this.value === "Thu") {
-        categoryBox.style.display = "none";
-    } else {
-        categoryBox.style.display = "block";
-    }
-});
-form.addEventListener("submit", function(e) {
-    e.preventDefault();
-
-    const data = {
-        amount: Number(form.amount.value),
-        type: form.type.value,
-        category: form.category.value,
-        date: form.date.value,
-        note: form.note.value
-    };
-
-    transactions.push(data);
-
-    updateBalance();
-
-    form.reset();
-    modal.classList.add("hidden");
-});
-
-function updateBalance() {
-    let thu = 0;
-    let chi = 0;
-
-    transactions.forEach(t => {
-        if (t.type === "Thu") thu += t.amount;
-        if (t.type === "Chi") chi += t.amount;
-    });
-
-    const balance = thu - chi;
-
-    const balanceEl = document.getElementById("balance");
-    balanceEl.innerText = balance.toLocaleString() + " VND";
-    if (balance > 0) balanceEl.className = "text-green-500";
-    else if (balance < 0) balanceEl.className = "text-red-500";
-    else balanceEl.className = "text-gray-500";
-}
+    <?php if ($page === 'home'): ?>
+        <?php
+            $cats = ['Ăn uống', 'Học tập', 'Giải trí', 'Mua sắm', 'Di chuyển'];
+            $vals = [0,0,0,0,0];
+            foreach($transactions as $t) {
+                if($t['type']=='Chi') {
+                    $idx = array_search($t['category'], $cats);
+                    if($idx !== false) $vals[$idx] += $t['amount'];
+                }
+            }
+        ?>
+        const ctx = document.getElementById('pieChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: <?= json_encode($cats) ?>,
+                datasets: [{
+                    data: <?= json_encode($vals) ?>,
+                    backgroundColor: ['#10b981','#3b82f6','#f59e0b','#ef4444','#8b5cf6'],
+                    borderWidth: 0
+                }]
+            },
+            options: { maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+        });
+    <?php endif; ?>
 </script>
-
-
-<?php
-require $_SERVER['DOCUMENT_ROOT'] . '/src/views/partials/application/AppFooter.php';
-?>
+<?php require $_SERVER['DOCUMENT_ROOT'] . '/src/views/partials/application/AppFooter.php'; ?>
