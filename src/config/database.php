@@ -6,7 +6,7 @@ use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable($_SERVER['DOCUMENT_ROOT']);
 $dotenv->load();
 date_default_timezone_set('Asia/Ho_Chi_Minh');
-error_reporting(0);
+error_reporting(E_ALL);
 $BASE_URL = $_SERVER['SERVER_NAME'];
 define('SERVERNAME', $_ENV['DB_HOST']);
 define('USERNAME', $_ENV['DB_USERNAME']);

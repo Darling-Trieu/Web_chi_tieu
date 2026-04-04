@@ -1,147 +1,182 @@
 <?php
 require $_SERVER['DOCUMENT_ROOT'] . '/src/views/partials/application/AppHeader.php';
 ?>
-        <div class="flex flex-col justify-center items-center min-h-screen px-4 py-8">
+<div class="fixed top-0 left-0 w-full h-12 bg-gradient-to-r from-emerald-500 to-blue-500 text-white flex items-center px-6 z-50 center justify-center text-3xl ">
+    <span class="font-semibold tracking-wide">Quản lý chi tiêu</span>
+</div>
+<div class="fixed top-12 left-0 w-full h-16 bg-white/70 backdrop-blur border-b shadow-sm flex items-center justify-between px-6 z-40">
+
+    <div class="flex items-center gap-4">
+        <div class="text-2xl font-bold bg-gradient-to-r from-emerald-500 to-blue-500 bg-clip-text text-transparent">
+            HIENLTH
+        </div>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="text-lg font-semibold">
+            Số dư: <span id="balance" class="text-green-500">0 VND</span>
+        </div>
+
+        <button id="openExpenseForm"
+            class="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-md bg-primary text-primary-foreground hover:opacity-90">
+            + Thu / Chi
+        </button>
+    </div>
+
+</div>
+<div class="mt-32"></div>
+
+<div class="mt-20"></div>
+
+<div id="expenseModal" class="hidden fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+    
+    <div class="w-full max-w-lg">
+        <div class="flex flex-col justify-center items-center px-4 py-8">
             <div class="max-w-lg w-full space-y-4">
-                <div class="flex items-center gap-2.5 h-14 px-4 rounded-lg bg-card border border-border text-foreground text-xl font-bold tracking-tight shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"/><path d="M2 9v1c0 1.1.9 2 2 2h1"/><path d="M16 11h.01"/></svg>
+                <div class="flex items-center justify-between h-14 px-4 rounded-lg bg-card border text-xl font-bold shadow-sm">
                     <span>Quản lý chi tiêu</span>
+                    <button id="closeExpenseForm">✕</button>
                 </div>
-                <form id="expenseForm" method="post" action="" class="flex flex-col gap-5 p-6 rounded-lg bg-card border border-border shadow-sm">
-                    <div class="flex flex-col gap-1.5">
-                        <label for="amount" class="text-sm font-medium leading-none text-foreground select-none tracking-wide">Số Tiền</label>
-                        <input type="number" id="amount" name="amount" placeholder="Nhập số tiền..." required min="0" step="0.01"
-                               class="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/65 outline-none transition-colors focus:border-ring focus:ring-2 focus:ring-ring/25 hover:border-input/80">
-                        <div class="text-xs text-destructive" id="amountError"></div>
+
+                <form id="expenseForm" class="flex flex-col gap-5 p-6 rounded-lg bg-card border shadow-sm">
+                    
+                    <div>
+                        <label>Số Tiền</label>
+                        <input type="number" name="amount" required class="w-full border p-2 rounded">
                     </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label for="type" class="text-sm font-medium leading-none text-foreground select-none tracking-wide">Loại Giao Dịch</label>
-                        <div class="relative w-full" data-select>
-                            <button type="button" data-select-trigger
-                                    class="flex items-center justify-between h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm text-muted-foreground cursor-pointer outline-none transition-colors hover:border-input/80 data-[state=open]:border-ring data-[state=open]:ring-2 data-[state=open]:ring-ring/25">
-                                <span data-select-value>Chọn loại</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 opacity-50 transition-transform duration-200"><path d="m6 9 6 6 6-6"/></svg>
-                            </button>
-                            <select id="type" name="type" required class="sr-only" tabindex="-1" aria-hidden="true">
-                                <option value="">Chọn loại</option>
-                                <option value="Thu">Thu</option>
-                                <option value="Chi">Chi</option>
-                            </select>
-                            <div class="custom-select-content absolute top-[calc(100%+4px)] left-0 w-full z-50 hidden flex-col rounded-md border border-border bg-card p-1 shadow-md" data-state="closed" data-select-content>
-                                <div class="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-foreground cursor-pointer select-none transition-colors hover:bg-accent hover:text-accent-foreground" data-value="" data-select-item>Chọn loại</div>
-                                <div class="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-foreground cursor-pointer select-none transition-colors hover:bg-accent hover:text-accent-foreground" data-value="Thu" data-select-item>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 opacity-70"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
-                                    Thu
-                                </div>
-                                <div class="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-foreground cursor-pointer select-none transition-colors hover:bg-accent hover:text-accent-foreground" data-value="Chi" data-select-item>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 opacity-70"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
-                                    Chi
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-xs text-destructive" id="typeError"></div>
+
+                    <div>
+                        <label>Loại</label>
+                        <select id="typeSelect" name="type" required class="w-full border p-2 rounded">
+                            <option value="">Chọn</option>
+                            <option value="Thu">Thu</option>
+                            <option value="Chi">Chi</option>
+                        </select>
                     </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label for="category" class="text-sm font-medium leading-none text-foreground select-none tracking-wide">Danh Mục</label>
-                        <div class="relative w-full" data-select>
-                            <button type="button" data-select-trigger
-                                    class="flex items-center justify-between h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm text-muted-foreground cursor-pointer outline-none transition-colors hover:border-input/80 data-[state=open]:border-ring data-[state=open]:ring-2 data-[state=open]:ring-ring/25">
-                                <span data-select-value>Chọn danh mục</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 opacity-50 transition-transform duration-200"><path d="m6 9 6 6 6-6"/></svg>
-                            </button>
-                            <select id="category" name="category" required class="sr-only" tabindex="-1" aria-hidden="true">
-                                <option value="">Chọn danh mục</option>
-                                <option value="Ăn uống">Ăn uống</option>
-                                <option value="Di chuyển">Di chuyển</option>
-                                <option value="Mua sắm">Mua sắm</option>
-                                <option value="Giải trí">Giải trí</option>
-                                <option value="Khác">Khác</option>
-                            </select>
-                            <div class="custom-select-content absolute top-[calc(100%+4px)] left-0 w-full z-50 hidden flex-col rounded-md border border-border bg-card p-1 shadow-md" data-state="closed" data-select-content>
-                                <div class="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-foreground cursor-pointer select-none transition-colors hover:bg-accent hover:text-accent-foreground" data-value="" data-select-item>Chọn danh mục</div>
-                                <div class="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-foreground cursor-pointer select-none transition-colors hover:bg-accent hover:text-accent-foreground" data-value="Ăn uống" data-select-item>🍜 Ăn uống</div>
-                                <div class="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-foreground cursor-pointer select-none transition-colors hover:bg-accent hover:text-accent-foreground" data-value="Di chuyển" data-select-item>🚗 Di chuyển</div>
-                                <div class="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-foreground cursor-pointer select-none transition-colors hover:bg-accent hover:text-accent-foreground" data-value="Mua sắm" data-select-item>🛍️ Mua sắm</div>
-                                <div class="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-foreground cursor-pointer select-none transition-colors hover:bg-accent hover:text-accent-foreground" data-value="Giải trí" data-select-item>🎮 Giải trí</div>
-                                <div class="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-foreground cursor-pointer select-none transition-colors hover:bg-accent hover:text-accent-foreground" data-value="Khác" data-select-item>📦 Khác</div>
-                            </div>
-                        </div>
-                        <div class="text-xs text-destructive" id="categoryError"></div>
+
+                    <div id="categoryBox">
+                        <label>Danh Mục</label>
+                        <select id="category" name="category" class="w-full border p-2 rounded">
+                            <option>Ăn uống</option>
+                            <option>Di chuyển</option>
+                            <option>Mua sắm</option>
+                            <option>Giải trí</option>
+                            <option>Khác</option>
+                        </select>
                     </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label for="date" class="text-sm font-medium leading-none text-foreground select-none tracking-wide">Ngày Giao Dịch</label>
-                        <input type="date" id="date" name="date" required
-                               class="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm text-foreground outline-none transition-colors focus:border-ring focus:ring-2 focus:ring-ring/25 hover:border-input/80">
-                        <div class="text-xs text-destructive" id="dateError"></div>
+
+                    <div>
+                        <label>Ngày</label>
+                        <input type="date" name="date" required class="w-full border p-2 rounded">
                     </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label for="note" class="text-sm font-medium leading-none text-foreground select-none tracking-wide">
-                            Ghi Chú <span class="font-normal text-muted-foreground text-xs">(Tùy chọn)</span>
-                        </label>
-                        <textarea id="note" name="note" rows="3" placeholder="Nhập ghi chú..."
-                                  class="flex w-full min-h-20 rounded-md border border-input bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/65 outline-none transition-colors focus:border-ring focus:ring-2 focus:ring-ring/25 hover:border-input/80 resize-y"></textarea>
+
+                    <div>
+                        <label>Ghi chú</label>
+                        <textarea name="note" class="w-full border p-2 rounded"></textarea>
                     </div>
-                    <button type="submit" id="submitBtn"
-                            class="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-md bg-primary text-primary-foreground text-sm font-medium whitespace-nowrap cursor-pointer transition-all duration-150 outline-none select-none hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+
+                    <button class="h-10 bg-primary text-white rounded hover:opacity-90">
                         Lưu Giao Dịch
                     </button>
                 </form>
+
             </div>
         </div>
-        <script>
-        document.querySelectorAll('[data-select]').forEach(wrapper => {
-            const trigger = wrapper.querySelector('[data-select-trigger]');
-            const content = wrapper.querySelector('[data-select-content]');
-            const valueSpan = wrapper.querySelector('[data-select-value]');
-            const nativeSelect = wrapper.querySelector('select');
-            const items = content.querySelectorAll('[data-select-item]');
-            const chevron = trigger.querySelector('svg');
+    </div>
+</div>
+<div class="fixed top-auto left-0 h-[calc(100vh-4rem)] w-64 bg-white border-r shadow-sm">
 
-            trigger.addEventListener('click', (e) => {
-                e.stopPropagation();
-                document.querySelectorAll('[data-select-content]').forEach(c => {
-                    if (c !== content) {
-                        c.setAttribute('data-state', 'closed');
-                        c.classList.add('hidden');
-                        c.closest('[data-select]').querySelector('[data-select-trigger]').removeAttribute('data-state');
-                        c.closest('[data-select]').querySelector('[data-select-trigger] svg').style.transform = '';
-                    }
-                });
-                const isOpen = content.getAttribute('data-state') === 'open';
-                content.setAttribute('data-state', isOpen ? 'closed' : 'open');
-                content.classList.toggle('hidden', isOpen);
-                trigger.setAttribute('data-state', isOpen ? 'closed' : 'open');
-                chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
-            });
+    <div class="p-4 space-y-2">
+        <div class="p-3 rounded-lg bg-emerald-100 text-emerald-600 font-medium">
+            Trang chủ
+        </div>
+        <div class="p-3 rounded-lg hover:bg-gray-100 cursor-pointer">
+            Lịch sử giao dịch 
+        </div>
+        <div class="p-3 rounded-lg hover:bg-gray-100 cursor-pointer">
+            Danh mục giao dịch
+        </div>
+        <div class="p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors duration-200">
+            <div class="font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <span>📊</span> Thống kê
+            </div>
+            <select name="category" class="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200">
+                <option>Theo tuần</option>
+                <option>Theo tháng</option>
+            </select>
+        </div>
 
-            items.forEach(item => {
-                item.addEventListener('click', () => {
-                    const value = item.getAttribute('data-value');
-                    nativeSelect.value = value;
-                    nativeSelect.dispatchEvent(new Event('change', { bubbles: true }));
-                    valueSpan.textContent = item.textContent.trim();
-                    valueSpan.classList.toggle('text-foreground', !!value);
-                    valueSpan.classList.toggle('text-muted-foreground', !value);
-                    items.forEach(i => i.classList.remove('bg-accent', 'font-medium'));
-                    if (value) item.classList.add('bg-accent', 'font-medium');
-                    content.setAttribute('data-state', 'closed');
-                    content.classList.add('hidden');
-                    trigger.removeAttribute('data-state');
-                    chevron.style.transform = '';
-                });
-            });
+        <div class="p-3 rounded-lg hover:bg-gray-100 cursor-pointer">
+            Cài đặt
+        </div>
 
-            document.addEventListener('click', (e) => {
-                if (!wrapper.contains(e.target)) {
-                    content.setAttribute('data-state', 'closed');
-                    content.classList.add('hidden');
-                    trigger.removeAttribute('data-state');
-                    chevron.style.transform = '';
-                }
-            });
-        });
-        </script>
+    </div>
+
+</div>
+
+<script>
+let transactions = [];
+
+const openBtn = document.getElementById("openExpenseForm");
+const closeBtn = document.getElementById("closeExpenseForm");
+const modal = document.getElementById("expenseModal");
+
+openBtn.onclick = () => modal.classList.remove("hidden");
+closeBtn.onclick = () => modal.classList.add("hidden");
+
+modal.onclick = (e) => {
+    if (e.target === modal) modal.classList.add("hidden");
+};
+const form = document.getElementById("expenseForm");
+
+const typeSelect = document.getElementById("typeSelect");
+const categoryBox = document.getElementById("categoryBox");
+
+typeSelect.addEventListener("change", function() {
+    if (this.value === "Thu") {
+        categoryBox.style.display = "none";
+    } else {
+        categoryBox.style.display = "block";
+    }
+});
+form.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const data = {
+        amount: Number(form.amount.value),
+        type: form.type.value,
+        category: form.category.value,
+        date: form.date.value,
+        note: form.note.value
+    };
+
+    transactions.push(data);
+
+    updateBalance();
+
+    form.reset();
+    modal.classList.add("hidden");
+});
+
+function updateBalance() {
+    let thu = 0;
+    let chi = 0;
+
+    transactions.forEach(t => {
+        if (t.type === "Thu") thu += t.amount;
+        if (t.type === "Chi") chi += t.amount;
+    });
+
+    const balance = thu - chi;
+
+    const balanceEl = document.getElementById("balance");
+    balanceEl.innerText = balance.toLocaleString() + " VND";
+    if (balance > 0) balanceEl.className = "text-green-500";
+    else if (balance < 0) balanceEl.className = "text-red-500";
+    else balanceEl.className = "text-gray-500";
+}
+</script>
+
+
 <?php
 require $_SERVER['DOCUMENT_ROOT'] . '/src/views/partials/application/AppFooter.php';
 ?>

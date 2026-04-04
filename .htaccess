@@ -10,5 +10,8 @@ Header set X-CSRF-Protection "1; mode=block"
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^home$ src/views/pages/application/AppIndex.php [L]
+# RewriteRule ^home$ src/views/pages/application/AppIndex.php [L]
+# RewriteRule ^$ src/views/pages/application/AppIndex.php [L]
+
 RewriteRule ^$ src/views/pages/application/AppIndex.php [L]
+RewriteRule ^home$ src/views/pages/application/AppIndex.php [L]
