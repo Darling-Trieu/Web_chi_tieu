@@ -40,7 +40,7 @@ class Transaction {
         $conn = self::connect();
 
         $result = $conn->query("
-            SELECT * FROM transactions ORDER BY date DESC
+            SELECT * FROM transactions WHERE date <= CURDATE() ORDER BY date DESC
         ");
 
         $data = [];
@@ -61,6 +61,7 @@ class Transaction {
                 SUM(CASE WHEN type='Chi' THEN amount ELSE 0 END)
             AS balance
             FROM transactions
+            WHERE date <= CURDATE()
         ");
 
         return $result->fetch_assoc()['balance'] ?? 0;
