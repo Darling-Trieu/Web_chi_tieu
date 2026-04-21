@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/../../../config/database.php';
-require_once __DIR__ . '/../../../config/function.php';
-?>
+require_once __DIR__ . '/src/config/database.php';
+require_once __DIR__ . '/src/config/function.php';
+?> 
 <!DOCTYPE html>
 <html lang="vi">
 <head>
