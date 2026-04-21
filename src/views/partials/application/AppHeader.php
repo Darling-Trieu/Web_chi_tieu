@@ -1,6 +1,6 @@
-<?php 
-require $_SERVER['DOCUMENT_ROOT'] . '/src/config/database.php'; 
-require $_SERVER['DOCUMENT_ROOT'] . '/src/config/function.php';
+<?php
+require_once __DIR__ . '/src/config/database.php';
+require_once __DIR__ . '/src/config/function.php';
 ?> 
 <!DOCTYPE html>
 <html lang="vi">
@@ -11,3 +11,12 @@ require $_SERVER['DOCUMENT_ROOT'] . '/src/config/function.php';
     <link rel="stylesheet" href="/public/css/globals.css?<?php echo time(); ?>">
 </head>
 <body>
+
+<header class="app-header">
+    <h1>Quản lý Chi Tiêu</h1>
+    <nav>
+        <a href="/application">Trang chủ</a>
+        <a href="/application/create">Thêm chi tiêu</a>
+        <a href="/application/report">Báo cáo</a>
+    </nav>
+</header>
