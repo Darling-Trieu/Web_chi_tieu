@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/src/config/database.php';
-require_once __DIR__ . '/src/config/function.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/src/config/database.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/src/config/function.php';
 ?> 
 <!DOCTYPE html>
 <html lang="vi">

@@ -64,27 +64,41 @@ class IndexController {
 
         $transactions = Transaction::getAll();
 
-        header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename=GiaoDich_' . date('Y-m-d') . '.csv');
+        header("Content-Type: application/vnd.ms-excel; charset=utf-8");
+        header("Content-Disposition: attachment; filename=GiaoDich_" . date('Y-m-d') . ".xls");
+        header("Pragma: no-cache");
+        header("Expires: 0");
 
-        $output = fopen('php://output', 'w');
+        $tongThu = 0;
+        $tongChi = 0;
 
-        // BOM UTF-8
-        fputs($output, "\xEF\xBB\xBF");
-
-        fputcsv($output, ['Ngày', 'Số Tiền', 'Loại', 'Danh Mục', 'Ghi Chú']);
-
+        echo '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+        echo '<head><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head>';
+        echo '<body>';
+        echo '<table border="1">';
+        echo '<tr><th>Ngày</th><th>Số Tiền</th><th>Loại</th><th>Danh Mục</th><th>Ghi Chú</th></tr>';
+        
         foreach ($transactions as $t) {
-            fputcsv($output, [
-                $t['date'],
-                $t['amount'],
-                $t['type'],
-                $t['category'],
-                $t['note']
-            ]);
+            echo '<tr>';
+            echo '<td>' . htmlspecialchars($t['date']) . '</td>';
+            echo '<td>' . htmlspecialchars($t['amount']) . '</td>';
+            echo '<td>' . htmlspecialchars($t['type']) . '</td>';
+            echo '<td>' . htmlspecialchars($t['category']) . '</td>';
+            echo '<td>' . htmlspecialchars($t['note']) . '</td>';
+            echo '</tr>';
+
+            if ($t['type'] === 'Thu') {
+                $tongThu += (float)$t['amount'];
+            } else {
+                $tongChi += (float)$t['amount'];
+            }
         }
 
-        fclose($output);
+        echo '<tr><td colspan="5"></td></tr>';
+        echo '<tr><td colspan="4" style="text-align: right;"><b>Tổng Thu:</b></td><td><b>' . $tongThu . '</b></td></tr>';
+        echo '<tr><td colspan="4" style="text-align: right;"><b>Tổng Chi:</b></td><td><b>' . $tongChi . '</b></td></tr>';
+        
+        echo '</table></body></html>';
         exit;
     }
 }

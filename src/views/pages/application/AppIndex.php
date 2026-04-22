@@ -2,30 +2,30 @@
 ?>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="fixed top-0 left-0 w-full h-12 bg-gradient-to-r from-emerald-500 to-blue-500 text-white flex items-center px-6 z-50 justify-center text-xl font-bold">
+<div class="fixed top-0 left-0 w-full h-12 bg-primary text-primary-foreground flex items-center px-6 z-50 justify-center text-xl font-bold">
     Quản lý chi tiêu
 </div>
 
-<div class="fixed top-12 left-0 w-full h-16 bg-white/80 backdrop-blur border-b shadow-sm flex items-center justify-between px-6 z-40">
-    <div class="text-2xl font-bold text-emerald-600">HIENLTH</div>
+<div class="fixed top-12 left-0 w-full h-16 bg-background/80 backdrop-blur border-b border-border shadow-sm flex items-center justify-between px-6 z-40">
+    <div class="text-2xl font-bold text-foreground tracking-tight">HIENLTH</div>
     <div class="flex items-center gap-6">
         <div class="text-right">
-            <p class="text-xs text-gray-400">Số dư hiện tại</p>
-            <p class="font-bold text-lg <?= $balance >= 0 ? 'text-green-600' : 'text-red-600' ?>"><?= number_format($balance) ?>đ</p>
+            <p class="text-xs text-muted-foreground">Số dư hiện tại</p>
+            <p class="font-bold text-lg <?= $balance >= 0 ? 'text-foreground' : 'text-destructive' ?>"><?= number_format($balance) ?>đ</p>
         </div>
-        <button id="openExpenseForm" class="bg-emerald-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-emerald-600 shadow-md transition-all">+ Giao dịch</button>
+        <button id="openExpenseForm" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg font-bold hover:opacity-90 shadow-md transition-all">+ Giao dịch</button>
     </div>
 </div>
 
 <div class="flex pt-28">
-    <div class="fixed left-0 w-64 h-full bg-white border-r p-4 space-y-2">
-        <a href="?page=home" class="block p-3 rounded-xl <?= $page=='home'?'bg-emerald-50 text-emerald-600 font-bold':'' ?>">🏠 Trang chủ</a>
-        <a href="?page=history" class="block p-3 rounded-xl <?= $page=='history'?'bg-emerald-50 text-emerald-600 font-bold':'' ?>">📜 Lịch sử giao dịch</a>
-        <a href="?page=chart" class="block p-3 rounded-xl <?= $page=='chart'?'bg-emerald-50 text-emerald-600 font-bold':'' ?>">
+    <div class="fixed left-0 w-64 h-full bg-card border-r border-border p-4 space-y-2">
+        <a href="?page=home" class="block p-3 rounded-xl hover:bg-muted transition-colors <?= $page=='home'?'bg-secondary text-secondary-foreground font-bold':'text-foreground' ?>">🏠 Trang chủ</a>
+        <a href="?page=history" class="block p-3 rounded-xl hover:bg-muted transition-colors <?= $page=='history'?'bg-secondary text-secondary-foreground font-bold':'text-foreground' ?>">📜 Lịch sử giao dịch</a>
+        <a href="?page=chart" class="block p-3 rounded-xl hover:bg-muted transition-colors <?= $page=='chart'?'bg-secondary text-secondary-foreground font-bold':'text-foreground' ?>">
             📊 Biểu đồ tháng
         </a>
-        <hr class="my-4">
-        <a href="?page=export_preview" class="block p-3 rounded-xl <?= $page=='export_preview'?'bg-blue-50 text-blue-600 font-bold':'hover:bg-gray-100 text-blue-600 font-medium italic' ?>">📥 Xuất file Excel (CSV)</a>
+        <hr class="my-4 border-border">
+        <a href="?page=export_preview" class="block p-3 rounded-xl transition-colors <?= $page=='export_preview'?'bg-primary text-primary-foreground font-bold':'hover:bg-muted text-foreground font-medium italic' ?>">📥 Xuất file Excel</a>
     </div>
 
     <div class="ml-64 flex-1 p-8">
@@ -38,15 +38,15 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             <!-- BUDGET -->
-            <div class="bg-white p-6 rounded-3xl border shadow-sm hover:shadow-md transition">
+            <div class="bg-card p-6 rounded-3xl border border-border shadow-sm hover:shadow-md transition">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-semibold text-gray-600">Hạn mức chi tiêu</h3>
+                    <h3 class="font-semibold text-foreground">Hạn mức chi tiêu</h3>
                     <form method="POST" class="flex gap-2">
-                        <input type="number" name="budget_amount"
+                        <input type="number" name="budget_amount" min="0" step="1" oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
                             placeholder="Đổi tổng hạn mức"
-                            class="border rounded-lg px-3 py-1 text-sm w-36 focus:border-emerald-500 outline-none">
+                            class="border border-border rounded-lg px-3 py-1 text-sm w-36 focus:border-ring outline-none bg-background text-foreground">
                         <button name="set_budget"
-                            class="bg-gray-100 px-3 py-1 rounded-lg text-sm hover:bg-emerald-500 hover:text-white transition">
+                            class="bg-secondary text-secondary-foreground px-3 py-1 rounded-lg text-sm hover:bg-primary hover:text-primary-foreground transition">
                             Lưu
                         </button>
                     </form>
@@ -80,13 +80,13 @@
                     }
 
                     $percentThang = ($budget > 0) ? ($tongChiThang / $budget) * 100 : 0;
-                    $barColorThang = ($percentThang > 100) ? 'bg-red-500' : 'bg-emerald-500';
+                    $barColorThang = ($percentThang > 100) ? 'bg-destructive' : 'bg-primary';
 
                     $percentTuan = ($budgetWeekly > 0) ? ($tongChiTuan / $budgetWeekly) * 100 : 0;
-                    $barColorTuan = ($percentTuan > 100) ? 'bg-red-500' : 'bg-blue-500';
+                    $barColorTuan = ($percentTuan > 100) ? 'bg-destructive' : 'bg-foreground';
 
                     $percentNgay = ($budgetDaily > 0) ? ($tongChiNgay / $budgetDaily) * 100 : 0;
-                    $barColorNgay = ($percentNgay > 100) ? 'bg-red-500' : 'bg-amber-500';
+                    $barColorNgay = ($percentNgay > 100) ? 'bg-destructive' : 'bg-muted-foreground';
                 ?>
 
                 <?php if ($percentThang > 100 || $percentTuan > 100 || $percentNgay > 100): ?>
@@ -116,37 +116,37 @@
                     <!-- Tháng -->
                     <div>
                         <div class="flex justify-between text-sm mb-1">
-                            <span class="font-medium text-gray-700">Tháng này</span>
-                            <span class="font-bold text-gray-800"><?= number_format($tongChiThang) ?> / <?= number_format($budget) ?>đ</span>
+                            <span class="font-medium text-muted-foreground">Tháng này</span>
+                            <span class="font-bold text-foreground"><?= number_format($tongChiThang) ?> / <?= number_format($budget) ?>đ</span>
                         </div>
-                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                        <div class="w-full bg-muted h-2 rounded-full overflow-hidden">
                             <div class="h-full <?= $barColorThang ?> transition-all duration-500" style="width: <?= min($percentThang, 100) ?>%"></div>
                         </div>
-                        <p class="text-[11px] text-right mt-1 <?= $percentThang > 100 ? 'text-red-500' : 'text-gray-400' ?>">
+                        <p class="text-[11px] text-right mt-1 <?= $percentThang > 100 ? 'text-destructive' : 'text-muted-foreground' ?>">
                             <?= round($percentThang, 1) ?>%
                         </p>
                     </div>
                     <div>
                         <div class="flex justify-between text-sm mb-1">
-                            <span class="font-medium text-gray-700">Tuần này</span>
-                            <span class="font-bold text-gray-800"><?= number_format($tongChiTuan) ?> / <?= number_format($budgetWeekly) ?>đ</span>
+                            <span class="font-medium text-muted-foreground">Tuần này</span>
+                            <span class="font-bold text-foreground"><?= number_format($tongChiTuan) ?> / <?= number_format($budgetWeekly) ?>đ</span>
                         </div>
-                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                        <div class="w-full bg-muted h-2 rounded-full overflow-hidden">
                             <div class="h-full <?= $barColorTuan ?> transition-all duration-500" style="width: <?= min($percentTuan, 100) ?>%"></div>
                         </div>
-                        <p class="text-[11px] text-right mt-1 <?= $percentTuan > 100 ? 'text-red-500' : 'text-gray-400' ?>">
+                        <p class="text-[11px] text-right mt-1 <?= $percentTuan > 100 ? 'text-destructive' : 'text-muted-foreground' ?>">
                             <?= round($percentTuan, 1) ?>%
                         </p>
                     </div>
                     <div>
                         <div class="flex justify-between text-sm mb-1">
-                            <span class="font-medium text-gray-700">Hôm nay</span>
-                            <span class="font-bold text-gray-800"><?= number_format($tongChiNgay) ?> / <?= number_format($budgetDaily) ?>đ</span>
+                            <span class="font-medium text-muted-foreground">Hôm nay</span>
+                            <span class="font-bold text-foreground"><?= number_format($tongChiNgay) ?> / <?= number_format($budgetDaily) ?>đ</span>
                         </div>
-                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                        <div class="w-full bg-muted h-2 rounded-full overflow-hidden">
                             <div class="h-full <?= $barColorNgay ?> transition-all duration-500" style="width: <?= min($percentNgay, 100) ?>%"></div>
                         </div>
-                        <p class="text-[11px] text-right mt-1 <?= $percentNgay > 100 ? 'text-red-500' : 'text-gray-400' ?>">
+                        <p class="text-[11px] text-right mt-1 <?= $percentNgay > 100 ? 'text-destructive' : 'text-muted-foreground' ?>">
                             <?= round($percentNgay, 1) ?>%
                         </p>
                     </div>
@@ -154,10 +154,10 @@
             </div>
 
             <!-- PIE -->
-            <div class="bg-white p-6 rounded-3xl border shadow-sm hover:shadow-md transition">
+            <div class="bg-card p-6 rounded-3xl border border-border shadow-sm hover:shadow-md transition">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-semibold text-gray-600">Phân bổ chi tiêu</h3>
-                    <input type="month" id="pieMonthSelector" value="<?= date('Y-m') ?>" max="<?= date('Y-m') ?>" class="border rounded-lg px-2 py-1 text-sm outline-none focus:border-emerald-500 text-gray-600 cursor-pointer">
+                    <h3 class="font-semibold text-foreground">Phân bổ chi tiêu</h3>
+                    <input type="month" id="pieMonthSelector" value="<?= date('Y-m') ?>" max="<?= date('Y-m') ?>" class="border border-border bg-background rounded-lg px-2 py-1 text-sm outline-none focus:border-ring text-foreground cursor-pointer">
                 </div>
                 <div class="w-full h-52">
                     <canvas id="pieChart"></canvas>
@@ -165,9 +165,9 @@
             </div>
 
         </div>
-        <div class="p-10 bg-gradient-to-r from-emerald-50 to-blue-50 rounded-3xl border text-center shadow-sm">
-            <h2 class="text-2xl font-bold text-emerald-700">Chào HIENLTH 👋</h2>
-            <p class="text-gray-500 mt-1">
+        <div class="p-10 bg-muted rounded-3xl border border-border text-center shadow-sm">
+            <h2 class="text-2xl font-bold text-foreground">Chào HIENLTH 👋</h2>
+            <p class="text-muted-foreground mt-1">
                 Hôm nay là <?= date('d/m/Y') ?>. Chúc bạn quản lý tài chính thật tốt!
             </p>
         </div>
@@ -178,30 +178,26 @@
 
     <div class="max-w-5xl mx-auto space-y-6">
         <div class="flex justify-between items-center">
-            <h2 class="text-2xl font-bold text-gray-800">📜 Lịch sử giao dịch</h2>
-            <a href="?page=export_preview"
-               class="text-sm bg-blue-50 text-blue-600 px-4 py-2 rounded-lg border hover:bg-blue-100 transition">
-               ⬇ Xuất CSV
-            </a>
+            <h2 class="text-2xl font-bold text-foreground">📜 Lịch sử giao dịch</h2>
         </div>
-        <div class="bg-white rounded-3xl border shadow-sm divide-y overflow-hidden">
+        <div class="bg-card rounded-3xl border border-border shadow-sm divide-y divide-border overflow-hidden">
 
             <?php if(empty($transactions)): ?>
-                <p class="p-10 text-center text-gray-400">Chưa có giao dịch.</p>
+                <p class="p-10 text-center text-muted-foreground">Chưa có giao dịch.</p>
             <?php endif; ?>
 
             <?php foreach (array_reverse($transactions) as $t): ?>
-                <div class="p-4 flex justify-between items-center hover:bg-gray-50 transition">
+                <div class="p-4 flex justify-between items-center hover:bg-muted/50 transition">
                     <div>
-                        <p class="font-semibold text-gray-700">
+                        <p class="font-semibold text-foreground">
                             <?= htmlspecialchars($t['category']) ?>
                         </p>
-                        <p class="text-xs text-gray-400">
+                        <p class="text-xs text-muted-foreground">
                             <?= $t['date'] ?> • <?= htmlspecialchars($t['note']) ?>
                         </p>
                     </div>
 
-                    <p class="font-bold text-lg <?= $t['type']=='Thu'?'text-emerald-500':'text-red-500' ?>">
+                    <p class="font-bold text-lg <?= $t['type']=='Thu'?'text-foreground':'text-destructive' ?>">
                         <?= ($t['type']=='Thu'?'+':'-') . number_format($t['amount']) ?>đ
                     </p>
                 </div>
@@ -216,13 +212,13 @@
     <div class="max-w-5xl mx-auto space-y-6">
 
         <div class="flex justify-between items-center">
-            <h2 class="text-2xl font-bold text-gray-800">
+            <h2 class="text-2xl font-bold text-foreground">
                 📊 Thống kê thu chi theo danh mục
             </h2>
-            <input type="month" id="barMonthSelector" value="<?= date('Y-m') ?>" max="<?= date('Y-m') ?>" class="border rounded-lg px-4 py-2 outline-none focus:border-emerald-500 text-gray-600 cursor-pointer shadow-sm font-semibold">
+            <input type="month" id="barMonthSelector" value="<?= date('Y-m') ?>" max="<?= date('Y-m') ?>" class="border border-border bg-background rounded-lg px-4 py-2 outline-none focus:border-ring text-foreground cursor-pointer shadow-sm font-semibold">
         </div>
 
-        <div class="bg-white p-6 rounded-3xl border shadow-sm hover:shadow-md transition">
+        <div class="bg-card p-6 rounded-3xl border border-border shadow-sm hover:shadow-md transition">
             <div class="w-full h-[400px]">
                 <canvas id="barChart"></canvas>
             </div>
@@ -234,39 +230,39 @@
 
     <div class="max-w-6xl mx-auto space-y-6">
         <div class="flex justify-between items-center">
-            <h2 class="text-2xl font-bold text-gray-800">👀 Xem trước dữ liệu xuất</h2>
-            <a href="?action=export" class="bg-emerald-500 text-white px-6 py-2 rounded-lg font-bold hover:bg-emerald-600 shadow-md transition-all">
-                ⬇ Xác nhận tải về (CSV)
+            <h2 class="text-2xl font-bold text-foreground">👀 Xem trước dữ liệu xuất</h2>
+            <a href="?action=export" class="bg-primary text-primary-foreground px-6 py-2 rounded-lg font-bold hover:opacity-90 shadow-md transition-all">
+                ⬇ Xác nhận tải về (Excel)
             </a>
         </div>
         
-        <div class="bg-white rounded-3xl border shadow-sm overflow-hidden">
+        <div class="bg-card rounded-3xl border border-border shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-gray-50 border-b">
-                            <th class="p-4 font-semibold text-gray-600">Ngày</th>
-                            <th class="p-4 font-semibold text-gray-600">Loại</th>
-                            <th class="p-4 font-semibold text-gray-600">Danh Mục</th>
-                            <th class="p-4 font-semibold text-gray-600">Ghi Chú</th>
-                            <th class="p-4 font-semibold text-gray-600 text-right">Số Tiền</th>
+                        <tr class="bg-muted border-b border-border">
+                            <th class="p-4 font-semibold text-foreground">Ngày</th>
+                            <th class="p-4 font-semibold text-foreground">Loại</th>
+                            <th class="p-4 font-semibold text-foreground">Danh Mục</th>
+                            <th class="p-4 font-semibold text-foreground">Ghi Chú</th>
+                            <th class="p-4 font-semibold text-foreground text-right">Số Tiền</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y">
+                    <tbody class="divide-y divide-border">
                         <?php if(empty($transactions)): ?>
-                            <tr><td colspan="5" class="p-10 text-center text-gray-400">Không có dữ liệu.</td></tr>
+                            <tr><td colspan="5" class="p-10 text-center text-muted-foreground">Không có dữ liệu.</td></tr>
                         <?php endif; ?>
                         <?php foreach (array_reverse($transactions) as $t): ?>
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="p-4 text-gray-700 whitespace-nowrap"><?= $t['date'] ?></td>
+                            <tr class="hover:bg-muted/50 transition">
+                                <td class="p-4 text-foreground whitespace-nowrap"><?= $t['date'] ?></td>
                                 <td class="p-4">
-                                    <span class="px-3 py-1 text-xs font-semibold rounded-full <?= $t['type']=='Thu'?'bg-emerald-100 text-emerald-700':'bg-red-100 text-red-700' ?>">
+                                    <span class="px-3 py-1 text-xs font-semibold rounded-full border border-border <?= $t['type']=='Thu'?'bg-background text-foreground':'bg-destructive/10 text-destructive' ?>">
                                         <?= $t['type'] ?>
                                     </span>
                                 </td>
-                                <td class="p-4 text-gray-700 font-medium"><?= htmlspecialchars($t['category']) ?></td>
-                                <td class="p-4 text-gray-500 text-sm max-w-xs truncate" title="<?= htmlspecialchars($t['note']) ?>"><?= htmlspecialchars($t['note']) ?></td>
-                                <td class="p-4 font-bold text-right <?= $t['type']=='Thu'?'text-emerald-600':'text-red-600' ?>">
+                                <td class="p-4 text-foreground font-medium"><?= htmlspecialchars($t['category']) ?></td>
+                                <td class="p-4 text-muted-foreground text-sm max-w-xs truncate" title="<?= htmlspecialchars($t['note']) ?>"><?= htmlspecialchars($t['note']) ?></td>
+                                <td class="p-4 font-bold text-right <?= $t['type']=='Thu'?'text-foreground':'text-destructive' ?>">
                                     <?= ($t['type']=='Thu'?'+':'-') . number_format($t['amount']) ?>đ
                                 </td>
                             </tr>
@@ -281,26 +277,26 @@
 
 </div>
 
-<div id="expenseModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-[100] p-4">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-        <form method="POST" class="p-6 space-y-4">
-            <div class="flex justify-between items-center border-b pb-4">
+<div id="expenseModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center z-[100] p-4">
+    <div class="bg-card border border-border w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+        <form method="POST" class="p-6 space-y-4 text-foreground">
+            <div class="flex justify-between items-center border-b border-border pb-4">
                 <span class="text-xl font-bold">Thêm Giao Dịch</span>
-                <button type="button" id="closeExpenseForm" class="text-gray-400 hover:text-black">✕</button>
+                <button type="button" id="closeExpenseForm" class="text-muted-foreground hover:text-foreground">✕</button>
             </div>
-            <input type="number" name="amount" placeholder="0 VND" required class="w-full text-3xl font-bold text-emerald-600 border-none focus:ring-0 p-0 text-center">
+            <input type="number" name="amount" placeholder="0 VND" required class="w-full text-3xl font-bold text-foreground bg-transparent border-none focus:ring-0 p-0 text-center placeholder:text-muted-foreground">
             <div class="grid grid-cols-2 gap-4">
-                <select name="type" id="typeSelect" class="border p-2 rounded-xl outline-none">
+                <select name="type" id="typeSelect" class="border border-border bg-background text-foreground p-2 rounded-xl outline-none focus:border-ring">
                     <option value="Chi">Khoản Chi</option>
                     <option value="Thu">Khoản Thu</option>
                 </select>
-                <select name="category" id="categoryBox" class="border p-2 rounded-xl outline-none">
+                <select name="category" id="categoryBox" class="border border-border bg-background text-foreground p-2 rounded-xl outline-none focus:border-ring">
                     <option>Ăn uống</option><option>Học tập</option><option>Giải trí</option><option>Mua sắm</option><option>Di chuyển</option>
                 </select>
             </div>
-            <input type="date" name="date" value="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d') ?>" class="w-full border p-2 rounded-xl">
-            <textarea name="note" placeholder="Ghi chú thêm..." class="w-full border p-2 rounded-xl"></textarea>
-            <button type="submit" class="w-full py-4 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600 shadow-lg">LƯU THÔNG TIN</button>
+            <input type="date" name="date" value="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d') ?>" class="w-full border border-border bg-background text-foreground p-2 rounded-xl outline-none focus:border-ring">
+            <textarea name="note" placeholder="Ghi chú thêm..." class="w-full border border-border bg-background text-foreground p-2 rounded-xl outline-none focus:border-ring"></textarea>
+            <button type="submit" class="w-full py-4 bg-primary text-primary-foreground rounded-xl font-bold hover:opacity-90 shadow-lg transition-opacity">LƯU THÔNG TIN</button>
         </form>
     </div>
 </div>
@@ -341,7 +337,7 @@
                     labels: cats,
                     datasets: [{
                         data: vals,
-                        backgroundColor: ['#10b981','#3b82f6','#f59e0b','#ef4444','#8b5cf6'],
+                        backgroundColor: ['#0d9488', '#2563eb', '#ca8a04', '#dc2626', '#7c3aed'],
                         borderWidth: 0
                     }]
                 },
@@ -411,13 +407,13 @@
                         {
                             label: 'Thu nhập',
                             data: labels.length ? thuData : [0],
-                            backgroundColor: '#10b981',
+                            backgroundColor: '#0d9488',
                             borderRadius: 6
                         },
                         {
                             label: 'Chi tiêu',
                             data: labels.length ? chiData : [0],
-                            backgroundColor: '#ef4444',
+                            backgroundColor: '#dc2626',
                             borderRadius: 6
                         }
                     ]
